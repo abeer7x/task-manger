@@ -3,10 +3,10 @@
 namespace App\Services;
 
 use App\Models\Task;
-use Illuminate\Validation\ValidationException;
 use App\Models\Status;
+
 use Illuminate\Support\Facades\Auth;
-use Throwable;
+
 class taskService
 {
     /**
@@ -23,11 +23,8 @@ class taskService
             $status = Status::where('name', $data['status_name'])->first();
 
             if (!$status) {
-                throw ValidationException::withMessages([
-                    'status_name' => ['الحالة غير موجودة.'],
-                ]);
+                return null;
             }
-
             $data['status_id'] = $status->id;
             unset($data['status_name']);
         }
@@ -35,19 +32,35 @@ class taskService
         return Task::create($data);
     }
 
-
-    public function getTask()
+    public function updateTask(Task $task, array $data)
     {
-
+        logger($data); 
+        if (isset($data['status_name'])) {
+            $status = Status::where('name', $data['status_name'])->first();
+            if (!$status) {
+                return null;
+            }
+            $task->status_id = $status->id;
+            unset($data['status_name']);
+        }
     
-        $tasks = Task::where('user_id', Auth::id())
-            ->with('status') 
-            ->get();
+        $task->update($data);
     
-            return $tasks;
+        return $task;
     }
+        public function getTask()
+    {
+        return Task::forUser(Auth::id())->with('status')->get();
+    }
+    public function deleteTask(Task $task){
+       
+        return $task->delete();
+        
+    }
+    public function confirmUser(Task $task): bool
+{
+    return $task->user_id === Auth::id();
+}
 
-
-    
 }
 

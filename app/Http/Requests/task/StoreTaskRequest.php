@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\task;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Rules\ValidStatus;
@@ -24,12 +24,14 @@ class StoreTaskRequest extends FormRequest
         return [
             'title'=> 'required|string|max:20',
             'description'=>'string|nullable',
-            'status_name'=>['required', 'string', new ValidStatus()]
+            'status_name'=>['required', 'string', new ValidStatus(),],
+            'priority' => 'sometimes|in:high,medium,low',
           
         ];
     }
     public function messages():array {
         return [
-            'title.required'=>"The title is required",];
+            'title.required'=>'title is required',
+            'priority.in' => 'The priority value is invalid. Allowed values are: high, medium, low.',];
         }
 }

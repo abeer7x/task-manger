@@ -2,52 +2,37 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\user\loginUserRequest;
+use App\Http\Requests\user\RegisterUserRequest;
 use Illuminate\Http\Request;
 use App\Models\User;
-use Illuminate\Auth\Authenticatable;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Services\authServices;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Gate;
 
 class AuthController extends Controller
 {
+    protected $authService;
+
+    public function __construct(authServices $authService)
+    {
+        $this->authService = $authService;
+    }
    
     
-    public function register(Request $request)
+    public function register(RegisterUserRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:40',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:6|confirmed|string',
-            'role' => 'nullable|string'
-        ]);
-    
-        $role = $validated['role'] ?? 'user';
-    
-        if ($role !== 'user') {
-            Gate::authorize('create-user-with-role');
-        }
-    
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'role' => $role,
-        ]);
-    
+        $user = $this->authService->registerUser($request->validated());
+
         return $this->success(['user' => $user, 'message' => 'User registered successfully'], 201);
     }
 
-    public function login(Request $request)
+    public function login(loginUserRequest $request)
     {
-      $request->validate([
-        'email' => 'required|string|email',
-        'password' => 'required|string'
-    ]);
 
     if (!Auth::attempt($request->only('email', 'password'))) {
-        return response()->json([
+        return $this->error([
             'message' => 'Invalid email or password'
         ], 401);
     }
@@ -55,8 +40,7 @@ class AuthController extends Controller
     $user = User::where('email', $request->email)->firstOrFail();
     $token = $user->createToken('auth_token')->plainTextToken;
 
-    return response()->json([
-        'message' => 'User login successful',
+    return $this->success([
         'user' => $user,
         'token' => $token
     ], 200);

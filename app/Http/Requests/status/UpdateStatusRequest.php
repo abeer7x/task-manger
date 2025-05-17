@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\status;
 
 use Illuminate\Foundation\Http\FormRequest;
-use App\Rules\ValidStatus;
-class StoreStatusRequest extends FormRequest
+
+class UpdateStatusRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,7 +22,7 @@ class StoreStatusRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', new ValidStatus()],
+              'name' => 'required|string|max:255'
         ];
     }
 }
