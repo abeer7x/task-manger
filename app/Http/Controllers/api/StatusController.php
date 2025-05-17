@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreStatusRequest;
-use App\Http\Requests\UpdateStatusRequest;
+use App\Http\Requests\status\StoreStatusRequest;
+use App\Http\Requests\status\UpdateStatusRequest;
 use App\Models\Status;
-use Illuminate\Http\Request;
 use App\Services\statusService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 

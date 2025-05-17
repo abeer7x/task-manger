@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\task;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -24,6 +24,8 @@ class UpdateTaskRequest extends FormRequest
         return [
             'title'=> 'sometimes|string|max:20',
             'description'=>'string|sometimes',
+            'status_name' => 'sometimes|string',
+            'priority' => 'sometimes|in:high,medium,low',
         ];
     }
 }

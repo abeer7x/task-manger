@@ -16,11 +16,13 @@ class ValidStatus implements Rule
     public function __construct()
     {
 
-        $this->allowed = Status::pluck('name')->toArray();
     }
 
     public function passes($attribute, $value): bool
     {
+        $allowed = Status::pluck('name')->toArray();
+    
+
         /** @var \App\Models\User|null $user */
         $user = Auth::user();
         if (!$user || !$user->isAdmin()) {
